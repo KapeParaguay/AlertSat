@@ -59,7 +59,7 @@ def obtener_eventos():
                     # Calcular la distancia entre tu ubicación y el evento
                     distancia = calcular_distancia(mi_lat, mi_lon, lat_evento, lon_evento)
 
-                    if distancia <= 200:  # Si el evento está dentro de los 1000 km
+                    if distancia <= 500:  # Si el evento está dentro de los 500 km
                         # Extraer el tipo de evento
                         tipo_evento = evento.get('categories', [{}])[0].get('title', 'desconocido')
 
