@@ -47,23 +47,29 @@ def obtener_eventos():
         eventos_cercanos = []
         data = response.json()
 
-        # Recorrer los eventos y calcular la distancia
+        # Recorrer los eventos y calcular la distanca
         for evento in data['events']:
             # Verificar si el evento tiene la clave 'geometries'
             if 'geometries' in evento and evento['geometries']:
-                # Usar la primera geometría (que es la posición actual del evento)
-                lat_evento = evento['geometries'][0]['coordinates'][1]
-                lon_evento = evento['geometries'][0]['coordinates'][0]
+                # Usar la primera geometría (la posición actual del evento)
+                for geometria in evento['geometries']:
+                    lat_evento = geometria['coordinates'][1]
+                    lon_evento = geometria['coordinates'][0]
 
-                # Calcular la distancia entre tu ubicación y el evento
-                distancia = calcular_distancia(mi_lat, mi_lon, lat_evento, lon_evento)
+                    # Calcular la distancia entre tu ubicación y el evento
+                    distancia = calcular_distancia(mi_lat, mi_lon, lat_evento, lon_evento)
 
-                if distancia <= 500:  # Si el evento está dentro de los 10,000 km
-                    eventos_cercanos.append({
-                        "titulo": evento['title'],
-                        "distancia_km": distancia,
-                        "ubicacion": (lat_evento, lon_evento)
-                    })
+                    if distancia <= 200:  # Si el evento está dentro de los 1000 km
+                        # Extraer el tipo de evento
+                        tipo_evento = evento.get('categories', [{}])[0].get('title', 'desconocido')
+
+                        eventos_cercanos.append({
+                            "titulo": evento['title'],
+                            "distancia_km": distancia,
+                            "ubicacion": (lat_evento, lon_evento),
+                            "tipo": tipo_evento,  # Agregar el tipo de evento
+                            "link": evento['link']  # Agregar el enlace al evento
+                        })
 
         # Devolver los eventos cercanos
         return jsonify(eventos_cercanos), 200
@@ -71,4 +77,5 @@ def obtener_eventos():
         return jsonify({"error": f"Error en la solicitud: {response.status_code}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
+
